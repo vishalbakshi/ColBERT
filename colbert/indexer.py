@@ -10,7 +10,7 @@ from colbert.infra.launcher import Launcher
 from colbert.utils.utils import create_directory, print_message
 
 from colbert.indexing.collection_indexer import encode
-
+from memory_profiler import profile
 
 class Indexer:
     def __init__(self, checkpoint, config=None, verbose: int = 3):
@@ -56,7 +56,8 @@ class Indexer:
                 os.remove(filename)
 
         return deleted
-
+        
+    @profile
     def index(self, name, collection, overwrite=False):
         assert overwrite in [True, False, 'reuse', 'resume', "force_silent_overwrite"]
 
@@ -80,7 +81,8 @@ class Indexer:
             self.__launch(collection)
 
         return self.index_path
-
+        
+    @profile
     def __launch(self, collection):
         launcher = Launcher(encode)
         if self.config.nranks == 1 and self.config.avoid_fork_if_possible:
