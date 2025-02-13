@@ -26,8 +26,9 @@ from colbert.indexing.utils import optimize_ivf
 from colbert.utils.utils import flatten, print_message
 
 from colbert.indexing.codecs.residual import ResidualCodec
+from memory_profiler import profile
 
-
+@profile
 def encode(config, collection, shared_lists, shared_queues, verbose: int = 3):
     encoder = CollectionIndexer(config=config, collection=collection, verbose=verbose)
     encoder.run(shared_lists)
@@ -58,6 +59,7 @@ class CollectionIndexer():
 
         print_memory_stats(f'RANK:{self.rank}')
 
+    @profile
     def run(self, shared_lists):
         with torch.inference_mode():
             self.setup() # Computes and saves plan for whole collection
