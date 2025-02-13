@@ -15,7 +15,7 @@ import colbert.utils.distributed as distributed
 from colbert.infra.config import BaseConfig, RunConfig, RunSettings
 from colbert.infra.run import Run
 from colbert.utils.utils import print_message
-
+from memory_profiler import profile
 
 class Launcher:
     def __init__(self, callee, run_config=None, return_all=False):
@@ -88,9 +88,13 @@ class Launcher:
         assert isinstance(custom_config, RunSettings)
         assert self.nranks == 1
         assert (custom_config.avoid_fork_if_possible or self.run_config.avoid_fork_if_possible)
-
+        
+        @profile
+        def _run_process_profiled(*args, **kwargs):
+            return run_process_without_mp(*args, **kwargs)
+            
         new_config = type(custom_config).from_existing(custom_config, self.run_config, RunConfig(rank=0))
-        return_val = run_process_without_mp(self.callee, new_config, *args)
+        return_val = _run_process_profiled(self.callee, new_config, *args)
 
         return return_val
 
@@ -101,12 +105,17 @@ def set_seed(seed):
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
 
+@profile
 def run_process_without_mp(callee, config, *args):
+    @profile
+    def _callee_profiled(*args, **kwargs):
+        return callee(*args, **kwargs)
+
     set_seed(12345)
     os.environ["CUDA_VISIBLE_DEVICES"] = ','.join(map(str, config.gpus_[:config.nranks]))
 
     with Run().context(config, inherit_config=False):
-        return_val = callee(config, *args)
+        return_val = _callee_profiled(config, *args)
         torch.cuda.empty_cache()
         return return_val
 
