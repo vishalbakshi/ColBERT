@@ -15,6 +15,7 @@ dependencies:
   - gcc=9.4.0
   - gxx=9.4.0
   - pip:
+    - memory-profiler
     - bitarray
     - datasets
     - gitpython
