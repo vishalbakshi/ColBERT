@@ -24,7 +24,8 @@ class Launcher:
 
         self.run_config = RunConfig.from_existing(Run().config, run_config)
         self.nranks = self.run_config.nranks
-
+        
+    @profile
     def launch(self, custom_config, *args):
         assert isinstance(custom_config, BaseConfig)
         assert isinstance(custom_config, RunSettings)
@@ -83,6 +84,7 @@ class Launcher:
         
         return return_values
 
+    @profile
     def launch_without_fork(self, custom_config, *args):
         assert isinstance(custom_config, BaseConfig)
         assert isinstance(custom_config, RunSettings)
