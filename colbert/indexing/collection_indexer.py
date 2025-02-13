@@ -78,7 +78,8 @@ class CollectionIndexer():
             self.finalize() # Builds metadata and centroid to passage mapping
             distributed.barrier(self.rank)
             print_memory_stats(f'RANK:{self.rank}')
-
+    
+    @profile
     def setup(self):
         '''
         Calculates and saves plan.json for the whole collection.
@@ -97,10 +98,18 @@ class CollectionIndexer():
                 return
 
         self.num_chunks = int(np.ceil(len(self.collection) / self.collection.get_chunksize()))
-
+        
+        @profile
+        def _sample_pids_profiled():
+            return self._sample_pids()
+    
+        @profile
+        def _sample_embeddings_profiled(pids):
+            return self._sample_embeddings(pids)
+            
         # Saves sampled passages and embeddings for training k-means centroids later 
-        sampled_pids = self._sample_pids()
-        avg_doclen_est = self._sample_embeddings(sampled_pids)
+        sampled_pids = _sample_pids_profiled()
+        avg_doclen_est = _sample_embeddings_profiled(sampled_pids)
 
         # Select the number of partitions
         num_passages = len(self.collection)
@@ -132,11 +141,16 @@ class CollectionIndexer():
 
         return set(sampled_pids)
 
+    @profile
     def _sample_embeddings(self, sampled_pids):
+        @profile
+        def _encode_passages_profiled(*args, **kwargs):
+            return self.encoder.encode_passages(*args, **kwargs)
+            
         local_pids = self.collection.enumerate(rank=self.rank)
         local_sample = [passage for pid, passage in local_pids if pid in sampled_pids]
 
-        local_sample_embs, doclens = self.encoder.encode_passages(local_sample)
+        local_sample_embs, doclens = _encode_passages_profiled(local_sample)
 
         if torch.cuda.is_available():
             if torch.distributed.is_available() and torch.distributed.is_initialized():
