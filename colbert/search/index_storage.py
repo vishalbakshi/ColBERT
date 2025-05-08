@@ -118,7 +118,8 @@ class IndexScorer(IndexLoader, CandidateGeneration):
         """
 
         # TODO: Remove batching?
-        batch_size = 2 ** 20
+        #batch_size = 2 ** 20
+        batch_size = 2 ** 16
 
         if centroid_scores is not None:
             if self.use_gpu:
