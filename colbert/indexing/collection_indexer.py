@@ -65,7 +65,7 @@ class CollectionIndexer():
             print_memory_stats(f'RANK:{self.rank}')
 
             if not self.config.resume or not self.saver.try_load_codec():
-                self.train(shared_lists) # Trains centroids from selected passages
+                centroids, args_ = self.train(shared_lists) # Trains centroids from selected passages
             distributed.barrier(self.rank)
             print_memory_stats(f'RANK:{self.rank}')
 
@@ -76,6 +76,8 @@ class CollectionIndexer():
             self.finalize() # Builds metadata and centroid to passage mapping
             distributed.barrier(self.rank)
             print_memory_stats(f'RANK:{self.rank}')
+
+            return centroids, args_
 
     def setup(self):
         '''
@@ -234,7 +236,7 @@ class CollectionIndexer():
 
         sample, heldout = self._concatenate_and_split_sample()
 
-        centroids = self._train_kmeans(sample, shared_lists)
+        centroids, args_ = self._train_kmeans(sample, shared_lists)
 
         print_memory_stats(f'RANK:{self.rank}')
         del sample
@@ -248,6 +250,7 @@ class CollectionIndexer():
         codec = ResidualCodec(config=self.config, centroids=centroids, avg_residual=avg_residual,
                               bucket_cutoffs=bucket_cutoffs, bucket_weights=bucket_weights)
         self.saver.save_codec(codec)
+        return centroids, args_
 
     def _concatenate_and_split_sample(self):
         print_memory_stats(f'***1*** \t RANK:{self.rank}')
@@ -314,7 +317,7 @@ class CollectionIndexer():
         else:
             centroids = centroids.float()
 
-        return centroids
+        return centroids, args_
 
     def _compute_avg_residual(self, centroids, heldout):
         compressor = ResidualCodec(config=self.config, centroids=centroids, avg_residual=None)
