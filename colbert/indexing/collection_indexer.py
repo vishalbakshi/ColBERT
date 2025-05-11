@@ -30,7 +30,8 @@ from colbert.indexing.codecs.residual import ResidualCodec
 
 def encode(config, collection, shared_lists, shared_queues, verbose: int = 3):
     encoder = CollectionIndexer(config=config, collection=collection, verbose=verbose)
-    encoder.run(shared_lists)
+    centroids, args_ = encoder.run(shared_lists)
+    return centroids, args_
 
 
 class CollectionIndexer():
