@@ -135,7 +135,7 @@ class CollectionIndexer():
         
         # added by vishal
         print(f"local_pids len: {len(list(self.collection.enumerate(rank=self.rank)))}")
-        for x,y in list(self.collection.enumerate(rank=self.rank))[:10]: print(x,y.shape,y)
+        for x,y in list(self.collection.enumerate(rank=self.rank))[:10]: print(x,y)
             
         local_sample = [passage for pid, passage in local_pids if pid in sampled_pids]
 
