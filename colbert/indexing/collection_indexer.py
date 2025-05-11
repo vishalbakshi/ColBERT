@@ -27,6 +27,11 @@ from colbert.utils.utils import flatten, print_message
 
 from colbert.indexing.codecs.residual import ResidualCodec
 
+random.seed(42)
+np.random.seed(42)
+torch.manual_seed(42)
+if torch.cuda.is_available():
+    torch.cuda.manual_seed_all(42)
 
 def encode(config, collection, shared_lists, shared_queues, verbose: int = 3):
     encoder = CollectionIndexer(config=config, collection=collection, verbose=verbose)
