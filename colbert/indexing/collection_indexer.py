@@ -132,6 +132,8 @@ class CollectionIndexer():
 
     def _sample_embeddings(self, sampled_pids):
         local_pids = self.collection.enumerate(rank=self.rank)
+        print(f"local_pids: {local_pids}")
+        print(f"local_pids.shape: {local_pids.shape}")
         local_sample = [passage for pid, passage in local_pids if pid in sampled_pids]
 
         local_sample_embs, doclens = self.encoder.encode_passages(local_sample)
