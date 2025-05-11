@@ -77,22 +77,27 @@ class Indexer:
             self.erase()
 
         if index_does_not_exist or overwrite != 'reuse':
-            self.__launch(collection)
+            result = self.__launch(collection)
 
-        return self.index_path
+        return {
+            "path": self.index_path,
+            "centroids": result[0] if result else None,
+            "args": result[1] if result else None
+        }
 
     def __launch(self, collection):
         launcher = Launcher(encode)
         if self.config.nranks == 1 and self.config.avoid_fork_if_possible:
             shared_queues = []
             shared_lists = []
-            launcher.launch_without_fork(self.config, collection, shared_lists, shared_queues, self.verbose)
+            result = launcher.launch_without_fork(self.config, collection, shared_lists, shared_queues, self.verbose)
 
-            return
+            return result
 
         manager = mp.Manager()
         shared_lists = [manager.list() for _ in range(self.config.nranks)]
         shared_queues = [manager.Queue(maxsize=1) for _ in range(self.config.nranks)]
 
         # Encodes collection into index using the CollectionIndexer class
-        launcher.launch(self.config, collection, shared_lists, shared_queues, self.verbose)
+        result = launcher.launch(self.config, collection, shared_lists, shared_queues, self.verbose)
+        return result
