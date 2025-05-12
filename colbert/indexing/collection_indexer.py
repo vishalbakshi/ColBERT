@@ -218,6 +218,19 @@ class CollectionIndexer():
 
         torch.save(local_sample_embs.half(), os.path.join(self.config.index_path_, f'sample.{self.rank}.pt'))
 
+        print(f"[DEBUG] Saved sample.{self.rank}.pt with size: {os.path.getsize(os.path.join(self.config.index_path_, f'sample.{self.rank}.pt'))} bytes")
+
+        if isinstance(local_sample_embs, torch.Tensor):
+            print(f"[DEBUG] Final local_sample_embs: shape={local_sample_embs.shape}, dtype={local_sample_embs.dtype}")
+            print(f"[DEBUG] Stats: min={local_sample_embs.min().item()}, max={local_sample_embs.max().item()}, mean={local_sample_embs.mean().item()}")
+            flat_sample = local_sample_embs.flatten()
+            print(f"[DEBUG] First 5 values: {flat_sample[:5].tolist()}")
+            print(f"[DEBUG] Sum: {local_sample_embs.sum().item()}")
+        else:
+            print(f"[DEBUG] Final local_sample_embs: type={type(local_sample_embs)}, length={len(local_sample_embs)}")
+            
+        print(f"[DEBUG] doclens stats: count={len(doclens)}, sum={sum(doclens)}, first 5={doclens[:5]}")
+
         return avg_doclen_est
 
     def _try_load_plan(self):
