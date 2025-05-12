@@ -146,7 +146,27 @@ class CollectionIndexer():
     def _sample_embeddings(self, sampled_pids):
         local_pids = self.collection.enumerate(rank=self.rank)
         
-        # added by vishal
+        print(f"[DEBUG] sampled_pids set size: {len(sampled_pids)}")
+        print(f"[DEBUG] first 5 from sampled_pids: {list(sampled_pids)[:5]}")
+        print(f"[DEBUG] sampled_pids sum: {sum(sampled_pids)}")
+
+        first_items = []
+        count = 0
+        for pid, content in list(self.collection.enumerate(rank=self.rank))[:10]:
+            in_sample = pid in sampled_pids
+            print(f"[DEBUG] Collection item {count}: pid={pid}, in_sample={in_sample}")
+            if isinstance(content, torch.Tensor):
+                print(f"[DEBUG]   Content is Tensor: shape={content.shape}, dtype={content.dtype}")
+                if in_sample:
+                    print(f"[DEBUG]   Sample tensor sum: {content.sum().item()}")
+            elif isinstance(content, str):
+                print(f"[DEBUG]   Content is String: len={len(content)}")
+                if in_sample:
+                    print(f"[DEBUG]   Sample string preview: {content[:50]}...")
+            else:
+                print(f"[DEBUG]   Content is {type(content)}")
+            count += 1
+            
         print(f"local_pids len: {len(list(self.collection.enumerate(rank=self.rank)))}")
         for x,y in list(self.collection.enumerate(rank=self.rank))[:10]: print(x,y)
             
