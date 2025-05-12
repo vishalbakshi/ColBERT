@@ -137,7 +137,7 @@ class CollectionIndexer():
         print(f"[DEBUG] _sample_pids: First 10 PIDs: {list(sampled_pids)[:100]}")
         print(f"[DEBUG] _sample_pids: Total PIDs: {len(sampled_pids)}")
         print(f"[DEBUG] _sample_pids: Random state check: {random.random()}")
-        print(f"[DEBUG] _sample_pids: sum: {sum(sample_pids)}")
+        print(f"[DEBUG] _sample_pids: sum: {sum(sampled_pids)}")
         if self.verbose > 1:
             Run().print_main(f"# of sampled PIDs = {len(sampled_pids)} \t sampled_pids[:3] = {sampled_pids[:3]}")
 
