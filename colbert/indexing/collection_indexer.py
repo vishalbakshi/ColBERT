@@ -217,6 +217,7 @@ class CollectionIndexer():
         Run().print(f'avg_doclen_est = {avg_doclen_est} \t len(local_sample) = {len(local_sample):,}')
 
         torch.save(local_sample_embs.half(), os.path.join(self.config.index_path_, f'sample.{self.rank}.pt'))
+        torch.save(local_sample_embs.half(), ".ragatouille/colbert/indexes/ConditionalQA_RAGatouille_index_1k/vishal_colbert_sample.pt")
 
         print(f"[DEBUG] Saved sample.{self.rank}.pt with size: {os.path.getsize(os.path.join(self.config.index_path_, f'sample.{self.rank}.pt'))} bytes")
 
