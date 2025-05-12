@@ -230,6 +230,7 @@ class CollectionIndexer():
         sample, heldout = self._concatenate_and_split_sample()
 
         centroids = self._train_kmeans(sample, shared_lists)
+        torch.save(centroids, "/content/colbert_inter_centroids.pt") # added by Vishal
 
         print_memory_stats(f'RANK:{self.rank}')
         del sample
