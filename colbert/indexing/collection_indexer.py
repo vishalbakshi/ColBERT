@@ -179,6 +179,7 @@ class CollectionIndexer():
         Run().print(f'avg_doclen_est = {avg_doclen_est} \t len(local_sample) = {len(local_sample):,}')
 
         torch.save(local_sample_embs.half(), os.path.join(self.config.index_path_, f'sample.{self.rank}.pt'))
+        torch.save(local_sample_embs, "/content/colbert_local_sample_embs.pt")
 
         return avg_doclen_est
 
