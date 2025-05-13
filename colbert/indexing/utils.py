@@ -6,6 +6,8 @@ from colbert.indexing.loaders import load_doclens
 from colbert.utils.utils import print_message, flatten
 
 def optimize_ivf(orig_ivf, orig_ivf_lengths, index_path, verbose:int=3):
+    torch.save(orig_ivf, "/content/colbert_orig_ivf.pt")
+    torch.save(orig_ivf_lengths, "/content/colbert_orig_ivf_lengths.pt")
     if verbose > 1:
         print_message("#> Optimizing IVF to store map from centroids to list of pids..")
 
@@ -15,6 +17,7 @@ def optimize_ivf(orig_ivf, orig_ivf_lengths, index_path, verbose:int=3):
     # assert self.num_embeddings == sum(flatten(all_doclens))
 
     all_doclens = flatten(all_doclens)
+    torch.save(all_doclens, "/content/colbert_all_doclens.pt")
     total_num_embeddings = sum(all_doclens)
 
     emb2pid = torch.zeros(total_num_embeddings, dtype=torch.int)
@@ -28,11 +31,16 @@ def optimize_ivf(orig_ivf, orig_ivf_lengths, index_path, verbose:int=3):
     for pid, dlength in enumerate(all_doclens):
         emb2pid[offset_doclens: offset_doclens + dlength] = pid
         offset_doclens += dlength
-
+        
+    torch.save(emb2pid, "/content/colbert_emb2pid_initial.pt")
+    
     if verbose > 1:
         print_message("len(emb2pid) =", len(emb2pid))
-
+    
     ivf = emb2pid[orig_ivf]
+    
+    torch.save(ivf, "/content/colbert_emb2pid_ivf.pt")
+    
     unique_pids_per_centroid = []
     ivf_lengths = []
 
@@ -42,8 +50,16 @@ def optimize_ivf(orig_ivf, orig_ivf_lengths, index_path, verbose:int=3):
         unique_pids_per_centroid.append(pids)
         ivf_lengths.append(pids.shape[0])
         offset += length
+        
+    torch.save(unique_pids_per_centroid, "/content/colbert_unique_pids_per_centroid.pt")
+    
     ivf = torch.cat(unique_pids_per_centroid)
+    
+    torch.save(ivf, "/content/colbert_ivf_after_cat.pt")
+    
     ivf_lengths = torch.tensor(ivf_lengths)
+    
+    torch.save(ivf_lengths, "/content/colbert_ivf_lengths_after_tensor.pt")
     
     max_stride = ivf_lengths.max().item()
     zero = torch.zeros(1, dtype=torch.long, device=ivf_lengths.device)
