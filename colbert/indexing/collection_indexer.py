@@ -373,7 +373,7 @@ class CollectionIndexer():
                 if self.verbose > 1:
                     Run().print_main(f"#> Saving chunk {chunk_idx}: \t {len(passages):,} passages "
                                     f"and {embs.size(0):,} embeddings. From #{offset:,} onward.")
-
+                torch.save(embs, "/content/colbert_embs.pt")
                 self.saver.save_chunk(chunk_idx, offset, embs, doclens) # offset = first passage index in chunk
                 del embs, doclens
 
