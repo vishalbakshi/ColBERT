@@ -138,6 +138,7 @@ class Checkpoint(ColBERT):
             text_batches, reverse_indices = self.doc_tokenizer.tensorize(
                 docs, bsize=bsize
             )
+            torch.save(text_batches, "/content/colbert_text_batches.pt")
 
             returned_text = []
             if return_tokens:
