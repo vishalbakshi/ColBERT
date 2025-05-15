@@ -102,8 +102,9 @@ class ColBERT(BaseColBERT):
         D = D * mask
 
         D = torch.nn.functional.normalize(D, p=2, dim=2)
-        if self.use_gpu:
-            D = D.half()
+        # commented out by Vishal
+        # if self.use_gpu: 
+        #     D = D.half()
 
         if keep_dims is False:
             D, mask = D.cpu(), mask.bool().cpu().squeeze(-1)
