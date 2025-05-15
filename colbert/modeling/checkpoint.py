@@ -80,7 +80,7 @@ class Checkpoint(ColBERT):
         self.query_tokenizer = QueryTokenizer(self.colbert_config, verbose=self.verbose)
         self.doc_tokenizer = DocTokenizer(self.colbert_config)
 
-        self.amp_manager = MixedPrecisionManager(True)
+        self.amp_manager = MixedPrecisionManager(False) # changed from True to False by Vishal
 
     def query(self, *args, to_cpu=False, **kw_args):
         with torch.no_grad():
