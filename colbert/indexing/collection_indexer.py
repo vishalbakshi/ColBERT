@@ -363,6 +363,7 @@ class CollectionIndexer():
                     continue
                 # Encode passages into embeddings with the checkpoint model
                 embs, doclens = self.encoder.encode_passages(passages) 
+                torch.save(embs, "/colbert_artifacts/embs.pt")
                 # commented out by Vishal
                 # if self.use_gpu:
                 #     assert embs.dtype == torch.float16
