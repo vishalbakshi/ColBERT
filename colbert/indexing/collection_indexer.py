@@ -135,6 +135,7 @@ class CollectionIndexer():
         local_sample = [passage for pid, passage in local_pids if pid in sampled_pids]
 
         local_sample_embs, doclens = self.encoder.encode_passages(local_sample)
+        torch.save(local_sample_embs, "/content/colbert_local_sample_embs.pt")
 
         if torch.cuda.is_available():
             if torch.distributed.is_available() and torch.distributed.is_initialized():
@@ -371,7 +372,8 @@ class CollectionIndexer():
                 if self.verbose > 1:
                     Run().print_main(f"#> Saving chunk {chunk_idx}: \t {len(passages):,} passages "
                                     f"and {embs.size(0):,} embeddings. From #{offset:,} onward.")
-
+                    
+                torch.save(embs, "/content/colbert_embs.pt")
                 self.saver.save_chunk(chunk_idx, offset, embs, doclens) # offset = first passage index in chunk
                 del embs, doclens
 
