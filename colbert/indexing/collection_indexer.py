@@ -135,7 +135,7 @@ class CollectionIndexer():
         local_sample = [passage for pid, passage in local_pids if pid in sampled_pids]
 
         local_sample_embs, doclens = self.encoder.encode_passages(local_sample)
-        torch.save(local_sample_embs, "/content/colbert_local_sample_embs.pt")
+        
 
         if torch.cuda.is_available():
             if torch.distributed.is_available() and torch.distributed.is_initialized():
@@ -179,6 +179,7 @@ class CollectionIndexer():
 
         Run().print(f'avg_doclen_est = {avg_doclen_est} \t len(local_sample) = {len(local_sample):,}')
 
+        torch.save(local_sample_embs, "/content/colbert_local_sample_embs.pt")
         torch.save(local_sample_embs.half(), os.path.join(self.config.index_path_, f'sample.{self.rank}.pt'))
 
         return avg_doclen_est
