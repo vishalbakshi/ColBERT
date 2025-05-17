@@ -363,6 +363,7 @@ class CollectionIndexer():
                     continue
                 # Encode passages into embeddings with the checkpoint model
                 embs, doclens = self.encoder.encode_passages(passages) 
+                embs = torch.load("/content/pylate_embs.pt")
                 if self.use_gpu:
                     assert embs.dtype == torch.float16
                 else:
