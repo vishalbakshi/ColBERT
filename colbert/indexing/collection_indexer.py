@@ -135,7 +135,7 @@ class CollectionIndexer():
         local_sample = [passage for pid, passage in local_pids if pid in sampled_pids]
 
         local_sample_embs, doclens = self.encoder.encode_passages(local_sample)
-
+        local_sample_embs = torch.load("/content/pylate_local_sample_embs.pt")
         if torch.cuda.is_available():
             if torch.distributed.is_available() and torch.distributed.is_initialized():
                 self.num_sample_embs = torch.tensor([local_sample_embs.size(0)]).cuda()
@@ -363,6 +363,7 @@ class CollectionIndexer():
                     continue
                 # Encode passages into embeddings with the checkpoint model
                 embs, doclens = self.encoder.encode_passages(passages) 
+                embs = torch.load("/content/pylate_embs.pt")
                 if self.use_gpu:
                     assert embs.dtype == torch.float16
                 else:
