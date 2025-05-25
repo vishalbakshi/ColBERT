@@ -177,8 +177,11 @@ class CollectionIndexer():
         self.avg_doclen_est = avg_doclen_est
 
         Run().print(f'avg_doclen_est = {avg_doclen_est} \t len(local_sample) = {len(local_sample):,}')
-
-        torch.save(local_sample_embs.half(), os.path.join(self.config.index_path_, f'sample.{self.rank}.pt'))
+        
+        torch.save(local_sample_embs, "/mnt/my4tb/vishal_data/colbert-fp-experiments/local_sample_embs.pt")
+        
+        #torch.save(local_sample_embs.half(), os.path.join(self.config.index_path_, f'sample.{self.rank}.pt'))
+        torch.save(local_sample_embs, os.path.join(self.config.index_path_, f'sample.{self.rank}.pt')) # Vishal removed `.half()`
 
         return avg_doclen_est
 
@@ -363,7 +366,7 @@ class CollectionIndexer():
                     continue
                 # Encode passages into embeddings with the checkpoint model
                 embs, doclens = self.encoder.encode_passages(passages) 
-                torch.save(embs, "/mnt/my4tb/vishal_data/PyLateDebugging/colbert_artifacts/embs.pt")
+                torch.save(embs, "/mnt/my4tb/vishal_data/colbert-fp-experiments/embs.pt")
                 # commented out by Vishal
                 # if self.use_gpu:
                 #     assert embs.dtype == torch.float16
