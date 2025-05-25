@@ -251,7 +251,7 @@ class CollectionIndexer():
         print_memory_stats(f'***1*** \t RANK:{self.rank}')
 
         # TODO: Allocate a float16 array. Load the samples from disk, copy to array.
-        sample = torch.empty(self.num_sample_embs, self.config.dim, dtype=torch.float16)
+        sample = torch.empty(self.num_sample_embs, self.config.dim, dtype=torch.float32) # changed to float32 by Vishal
 
         offset = 0
         for r in range(self.nranks):
@@ -308,7 +308,7 @@ class CollectionIndexer():
 
         centroids = torch.nn.functional.normalize(centroids, dim=-1)
         if self.use_gpu:
-            centroids = centroids.half()
+            centroids = centroids.float()
         else:
             centroids = centroids.float()
 
