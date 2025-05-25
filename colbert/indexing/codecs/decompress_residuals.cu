@@ -7,17 +7,17 @@
 
 __global__ void decompress_residuals_kernel(
     const uint8_t* binary_residuals,
-    const torch::PackedTensorAccessor32<at::Half, 1, torch::RestrictPtrTraits>
+    const torch::PackedTensorAccessor32<float, 1, torch::RestrictPtrTraits>
         bucket_weights,
     const torch::PackedTensorAccessor32<uint8_t, 1, torch::RestrictPtrTraits>
         reversed_bit_map,
     const torch::PackedTensorAccessor32<uint8_t, 2, torch::RestrictPtrTraits>
         bucket_weight_combinations,
     const torch::PackedTensorAccessor32<int, 1, torch::RestrictPtrTraits> codes,
-    const torch::PackedTensorAccessor32<at::Half, 2, torch::RestrictPtrTraits>
+    const torch::PackedTensorAccessor32<float, 2, torch::RestrictPtrTraits>
         centroids,
     const int n, const int dim, const int nbits, const int packed_size,
-    at::Half* output) {
+    float* output) {
     const int packed_dim = (int)(dim * nbits / packed_size);
     const int i = blockIdx.x;
     const int j = threadIdx.x;
@@ -61,15 +61,15 @@ torch::Tensor decompress_residuals_cuda(
     decompress_residuals_kernel<<<blocks, threads>>>(
         binary_residuals.data<uint8_t>(),
         bucket_weights
-            .packed_accessor32<at::Half, 1, torch::RestrictPtrTraits>(),
+            .packed_accessor32<float, 1, torch::RestrictPtrTraits>(),
         reversed_bit_map
             .packed_accessor32<uint8_t, 1, torch::RestrictPtrTraits>(),
         bucket_weight_combinations
             .packed_accessor32<uint8_t, 2, torch::RestrictPtrTraits>(),
         codes.packed_accessor32<int, 1, torch::RestrictPtrTraits>(),
-        centroids.packed_accessor32<at::Half, 2, torch::RestrictPtrTraits>(),
+        centroids.packed_accessor32<float, 2, torch::RestrictPtrTraits>(),
         binary_residuals.size(0), dim, nbits, packed_size,
-        output.data<at::Half>());
+        output.data<float>());
 
     return output;
 }
