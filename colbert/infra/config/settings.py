@@ -25,7 +25,7 @@ class RunSettings:
 
     rank: int = DefaultVal(0)
     nranks: int = DefaultVal(1)
-    amp: bool = DefaultVal(True)
+    amp: bool = DefaultVal(False)
 
     total_visible_gpus = torch.cuda.device_count()
     gpus: int = DefaultVal(total_visible_gpus)
