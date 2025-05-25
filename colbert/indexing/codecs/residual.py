@@ -156,7 +156,7 @@ class ResidualCodec:
         avgresidual_path = os.path.join(index_path, 'avg_residual.pt')
         buckets_path = os.path.join(index_path, 'buckets.pt')
 
-        torch.save(self.centroids.half(), centroids_path)
+        torch.save(self.centroids.float(), centroids_path)
         torch.save((self.bucket_cutoffs, self.bucket_weights), buckets_path)
 
         if torch.is_tensor(self.avg_residual):
